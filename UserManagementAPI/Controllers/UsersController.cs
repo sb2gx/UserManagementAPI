@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UserManagementAPI.Data;
 using UserManagementAPI.Models;
+using UserManagementAPI.Models.Binding;
 
 namespace UserManagementAPI.Controllers
 {
@@ -15,10 +17,12 @@ namespace UserManagementAPI.Controllers
     public class UsersController : ControllerBase
     {
         private readonly UserManagementContext _context;
+        private readonly IMapper _mapper;
 
-        public UsersController(UserManagementContext context)
+        public UsersController(UserManagementContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         // GET: api/Users
@@ -84,12 +88,13 @@ namespace UserManagementAPI.Controllers
         // POST: api/Users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
+        public async Task<ActionResult<User>> PostUser(UserBindingModel userModel)
         {
             if (_context.Users == null)
             {
                 return Problem("Entity set 'UserManagementContext.Users'  is null.");
             }
+            var user = new User(userModel.FirstName, userModel.LastName, userModel.Email, userModel.Phone, userModel.Gender, userModel.Nationality, userModel.DateOfBirth, userModel.Role);
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
