@@ -1,21 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Swashbuckle.AspNetCore.Annotations;
 using UserManagementAPI.Data;
 using UserManagementAPI.Models;
 using UserManagementAPI.Models.Binding;
+using UserManagementAPI.Models.View;
 
 namespace UserManagementAPI.Controllers
 {
     [EnableCors]
     [Route("api/[controller]")]
     [ApiController]
+    [SwaggerResponse((int)HttpStatusCode.OK, "Return data about users", typeof(UserViewModel))]
     public class UsersController : ControllerBase
     {
         private readonly UserManagementContext _context;
