@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,7 @@ using UserManagementAPI.Models.Binding;
 
 namespace UserManagementAPI.Controllers
 {
+    [EnableCors]
     [Route("api/[controller]")]
     [ApiController]
     public class UsersController : ControllerBase
@@ -52,6 +54,24 @@ namespace UserManagementAPI.Controllers
             }
 
             return user;
+        }
+
+        // GET: api/Users?searchString=Test
+        [HttpGet("search/{searchString}")]
+        public async Task<ActionResult<IEnumerable<User>>> GetUsers(string searchString)
+        {
+            if (_context.Users == null)
+            {
+                return NotFound();
+            }
+            var users = await _context.Users.Where(u => (u.FirstName + u.LastName + u.Email + u.Phone).Contains(searchString)).ToListAsync();
+
+            if (users == null)
+            {
+                return NotFound();
+            }
+
+            return users;
         }
 
         // PUT: api/Users/5
